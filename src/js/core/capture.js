@@ -196,8 +196,7 @@
            var rawContent = tElem.html();
            if(tAttrs.uiDuplicate === null || tAttrs.uiDuplicate === undefined) {
              // no need to compile anything!
-             tElem.html('');
-             tElem.remove();
+             tElem.replaceWith(document.createTextNode(''));
            }
            return function(scope, elem, attrs) {
              Capture.setContentFor(attrs.uiContentFor, rawContent, scope);
