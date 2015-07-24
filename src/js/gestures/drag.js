@@ -331,7 +331,7 @@ app.directive('dragMe', ['$drag', function($drag){
               cleanup();
 
               if (endEventHandler) {
-                endEventHandler(touch, event);
+                endEventHandler(touch, event, reset);
               }
             };
 
