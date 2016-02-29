@@ -3,7 +3,7 @@
 @description
 
 `mobile-angular-ui.gestures.drag` module exposes the `$drag` service that is used 
-to handle drag gestures. `$drag` service wraps [$touch](../module:touch) service adding
+to handle drag gestures. `$drag` service wraps [uiTouch](../module:touch) service adding
 CSS transforms reacting to `touchmove` events.
 
 ## Usage
@@ -37,7 +37,7 @@ Where:
    for the element in response to `touch`. See [$transform](../module:transform) for more.
    Default to `$drag.TRANSLATE_BOTH`.
 - `start`, `end`, `move`, `cancel` are optional callbacks responding to `drag` movement phases.
-- `dragInfo` is an extended version of `touchInfo` from [$touch](../module:touch), 
+- `dragInfo` is an extended version of `touchInfo` from [uiTouch](../module:touch), 
   extending it with:
   - `originalTransform`: The [$transform](../module:transform) object relative to CSS transform before `$drag` is bound.
   - `originalRect`: The [Bounding Client Rect](https://developer.mozilla.org/en-US/docs/Web/API/Element.getBoundingClientRect) for bound element before any drag action.
@@ -47,7 +47,7 @@ Where:
   - `transform`: The current [$transform](../module:transform).
   - `reset`: A function restoring element to `originalTransform`.
   - `undo`: A function restoring element to `startTransform`.
-- `touchOptions` is an option object to be passed to underlying [`$touch`](../module:touch) service.
+- `touchOptions` is an option object to be passed to underlying [`uiTouch`](../module:touch) service.
 
 ### Predefined transforms
 
@@ -123,7 +123,7 @@ app.directive('dragMe', ['$drag', function($drag){
    ])
 
   .provider('$drag', function() {
-    this.$get = ['$touch', '$transform', function($touch, $transform) {
+    this.$get = ['uiTouch', '$transform', function(uiTouch, $transform) {
 
       // Add some css rules to be used while moving elements
       var style = document.createElement('style');
@@ -298,7 +298,7 @@ app.directive('dragMe', ['$drag', function($drag){
               // it is (ie. maybe html5 drag for images or scroll)
               event.preventDefault();
 
-              // $touch calls start on the first touch
+              // uiTouch calls start on the first touch
               // to ensure $drag.start is called only while actually
               // dragging and not for touches we will bind $drag.start
               // to the first time move is called
@@ -347,7 +347,7 @@ app.directive('dragMe', ['$drag', function($drag){
               }
             };
 
-            return $touch.bind($element, 
+            return uiTouch.bind($element, 
               {move: onTouchMove, end: onTouchEnd, cancel: onTouchCancel},
               touchOptions);
           } // ~ bind

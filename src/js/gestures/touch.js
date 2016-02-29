@@ -15,10 +15,10 @@
  * angular.module('myApp', ['mobile-angular-ui.gestures.touch']);
  * ```
  * 
- * Then you will be able to use the `$touch` service like that:
+ * Then you will be able to use the `uiTouch` service like that:
  * 
  * ``` js
- * var unbindFn = $touch.bind(element, {
+ * var unbindFn = uiTouch.bind(element, {
  *    start: function(touchInfo, e);
  *    move: function(touchInfo, e);
  *    end: function(touchInfo, e);
@@ -33,17 +33,17 @@
   var module = angular.module('mobile-angular-ui.gestures.touch', []);
 
   /** 
-   * `$touch` is an abstraction of touch event handling that works with 
+   * `uiTouch` is an abstraction of touch event handling that works with 
    * any kind of input devices.
    * 
    * It is intended for single touch only and provides 
    * extended infos about touch like: movement, direction, velocity, duration, and more.
-   * $touch service is intended as base to build any single-touch gesture handlers.
+   * uiTouch service is intended as base to build any single-touch gesture handlers.
    * 
    * **Usage**
    * 
    * ``` js
-   * var unbindFn = $touch.bind(element, {
+   * var unbindFn = uiTouch.bind(element, {
    *    start: function(touchInfo, e);
    *    move: function(touchInfo, e);
    *    end: function(touchInfo, e);
@@ -51,18 +51,18 @@
    * }, options);
    * ```
    * 
-   * @service $touch
+   * @service uiTouch
    * @as class
    */
   
 
   /**
-   * Configurable provider for `$touch` service
-   * @class  $touchProvider
+   * Configurable provider for `uiTouch` service
+   * @class  uiTouchProvider
    * @ngdoc  provider
-   * @memberOf mobile-angular-ui.gestures.touch~$touch
+   * @memberOf mobile-angular-ui.gestures.touch~uiTouch
    */
-  module.provider('$touch', function() {
+  module.provider('uiTouch', function() {
 
     /*=====================================
     =            Configuration            =
@@ -121,14 +121,14 @@
      * Ie.
      *
      * ```
-     * app.config(function($touchProvider){
-     *   $touchProvider.setPointerEvents({ pen: {start: "pendown", end: "penup", move: "penmove" }});
+     * app.config(function(uiTouchProvider){
+     *   uiTouchProvider.setPointerEvents({ pen: {start: "pendown", end: "penup", move: "penmove" }});
      * });
      * ```
      *
      * @name setPointerEvents
      * @param {object} pointerEvents The pointer events map object
-     * @memberOf mobile-angular-ui.gestures.touch~$touch.$touchProvider
+     * @memberOf mobile-angular-ui.gestures.touch~uiTouch.uiTouchProvider
      */
     this.setPointerEvents = function(pointerEvents) {
       POINTER_EVENTS = pointerEvents;
@@ -141,7 +141,7 @@
      * The default is defined as always true:
      *
      * ``` js
-     * $touchProvider.setValid(function(touch, event) {
+     * uiTouchProvider.setValid(function(touch, event) {
      *   return true;
      * });
      * ```
@@ -152,7 +152,7 @@
      *                   should be considered valid and its handlers triggered, 
      *                   or considered invalid and its handlers be ignored.                  
      * @method setValid
-     * @memberOf mobile-angular-ui.gestures.touch~$touch.$touchProvider
+     * @memberOf mobile-angular-ui.gestures.touch~uiTouch.uiTouchProvider
      */
     this.setValid = function(fn) {
       VALID = fn;
@@ -167,13 +167,13 @@
      * ie.
      * 
      * ``` js
-     * $touchProvider.setMovementThreshold(120);
+     * uiTouchProvider.setMovementThreshold(120);
      * ```
      * 
      * @param {integer}  threshold The new treeshold.
      * 
      * @method  setMovementThreshold
-     * @memberOf mobile-angular-ui.gestures.touch~$touch.$touchProvider
+     * @memberOf mobile-angular-ui.gestures.touch~uiTouch.uiTouchProvider
      */
     this.setMovementThreshold = function(v) {
       MOVEMENT_THRESHOLD = v;
@@ -193,7 +193,7 @@
      * ie.
      * 
      * ``` js
-     * $touchProvider.setSensitiveArea(function($element) {
+     * uiTouchProvider.setSensitiveArea(function($element) {
      *   return $element[0].ownerDocument.documentElement.getBoundingClientRect();
      * });
      * ```
@@ -204,7 +204,7 @@
      *                                                       element or a [rectangle](https://developer.mozilla.org/en-US/docs/Web/API/Element.getBoundingClientRect).
      *
      * @method  setSensitiveArea
-     * @memberOf mobile-angular-ui.gestures.touch~$touch.$touchProvider
+     * @memberOf mobile-angular-ui.gestures.touch~uiTouch.uiTouchProvider
      */
     this.setSensitiveArea = function(fnOrElementOrRect) {
       SENSITIVE_AREA = fnOrElementOrRect;
@@ -287,7 +287,7 @@
      * 
      * @class TouchInfo
      * @ngdoc type
-     * @memberOf mobile-angular-ui.gestures.touch~$touch
+     * @memberOf mobile-angular-ui.gestures.touch~uiTouch
      */
 
     var buildTouchInfo = function(type, c, t0, tl) {
@@ -384,7 +384,7 @@
          * Bind touch handlers for an element.
          *
          * ``` js
-         * var unbind = $touch.bind(elem, { 
+         * var unbind = uiTouch.bind(elem, { 
          *   end: function(touch) { 
          *     console.log('Avg Speed:', touch.averageVelocity);
          *     unbind();
@@ -405,11 +405,11 @@
          *                                                                  or a function that takes the bound element and returns one of the previous.
          *                                                                  Sensitive area define bounduaries to release touch when movement is outside.
          * @param  {array} [options.pointerTypes] Pointer types to handle. An array of pointer types that is intended to be 
-         *                                        a subset of keys from default pointer events map (see `$touchProvider.setPointerEvents`).
+         *                                        a subset of keys from default pointer events map (see `uiTouchProvider.setPointerEvents`).
          *
          * @returns {function} The unbind function.
          * 
-         * @memberOf mobile-angular-ui.gestures.touch~$touch
+         * @memberOf mobile-angular-ui.gestures.touch~uiTouch
          */
         bind: function($element, eventHandlers, options) {
 

@@ -12,7 +12,7 @@
   /**
    * An adaptation of `ngTouch.$swipe`, it is basically the same despite of:
    * 
-   * - It is based on [$touch](../module:touch)
+   * - It is based on [uiTouch](../module:touch)
    * - Swipes are recognized by touch velocity and direction
    * - It does not require `ngTouch` thus is better compatible with fastclick.js 
    * - Swipe directives are nestable
@@ -27,12 +27,12 @@
    *     $swipe.bind(..., pointerTypes: { mouse: { start: 'mousedown', ...} });
    *   ```
    *   This is due to the fact that the second parameter of `$swipe.bind` is destinated to options for
-   *   underlying `$touch` service.
+   *   underlying `uiTouch` service.
    *   
    * @service $swipe
    * @as class
    */
-  module.factory('$swipe', ['$touch', function($touch) {
+  module.factory('$swipe', ['uiTouch', function(uiTouch) {
     var VELOCITY_THRESHOLD = 500; // px/sec
     var MOVEMENT_THRESHOLD = 10; // px
     var TURNAROUND_MAX = 10; // px
@@ -83,7 +83,7 @@
        * @param  {function} [eventHandlers.end]  The callback for swipe end event.
        * @param  {function} [eventHandlers.move]  The callback for swipe move event.
        * @param  {function} [eventHandlers.cancel]  The callback for swipe cancel event.
-       * @param  {object} [options] Options to be passed to underlying [$touch.bind](../module:touch) function.
+       * @param  {object} [options] Options to be passed to underlying [uiTouch.bind](../module:touch) function.
        * 
        * @returns {function} The unbind function.
        * 
@@ -92,7 +92,7 @@
        */
       bind: function(element, eventHandlers, options) {
         options = angular.extend({}, defaultOptions, options || {});
-        return $touch.bind(element, eventHandlers, options);
+        return uiTouch.bind(element, eventHandlers, options);
       }
     };
   }]);
@@ -136,7 +136,7 @@
                   if (!event.__UiSwipeHandled__) {
                     event.__UiSwipeHandled__ = true;
                     scope.$apply(function() {
-                      onSwipe(scope, {$touch: swipe});
+                      onSwipe(scope, {uiTouch: swipe});
                     });
                   }
                 }
