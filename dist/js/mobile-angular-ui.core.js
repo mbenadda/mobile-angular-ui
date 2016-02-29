@@ -1077,12 +1077,22 @@ a.active {
          },
 
          setContentFor: function(name, content, scope) {
-           var b = yielders[name];
-           if (!b) {
-             return;
-           }
-           b.element.html(content);
-           $compile(b.element.contents())(scope);
+          // Attempt to effect the content-for ASAP
+          if (yielders[name]) {
+            var yielder = yielders[name];
+            yielder.element.html(content);
+            $compile(yielder.element.contents())(scope);
+          }
+          // If we could not do it on the spot, wait for an apply cycle and retry
+          else {
+            scope.$applyAsync(function () {
+              if (yielders[name]) {
+                var yielder = yielders[name];
+                yielder.element.html(content);
+                $compile(yielder.element.contents())(scope);
+              }
+            });
+          }
          }
 
        };
@@ -1113,8 +1123,7 @@ a.active {
            var rawContent = tElem.html();
            if(tAttrs.uiDuplicate === null || tAttrs.uiDuplicate === undefined) {
              // no need to compile anything!
-             tElem.html('');
-             tElem.remove();
+             tElem.replaceWith(document.createTextNode(''));
            }
            return function(scope, elem, attrs) {
              Capture.setContentFor(attrs.uiContentFor, rawContent, scope);

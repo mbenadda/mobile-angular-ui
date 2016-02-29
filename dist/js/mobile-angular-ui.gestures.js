@@ -3,7 +3,7 @@
 @description
 
 `mobile-angular-ui.gestures.drag` module exposes the `$drag` service that is used 
-to handle drag gestures. `$drag` service wraps [$touch](../module:touch) service adding
+to handle drag gestures. `$drag` service wraps [uiTouch](../module:touch) service adding
 CSS transforms reacting to `touchmove` events.
 
 ## Usage
@@ -37,7 +37,7 @@ Where:
    for the element in response to `touch`. See [$transform](../module:transform) for more.
    Default to `$drag.TRANSLATE_BOTH`.
 - `start`, `end`, `move`, `cancel` are optional callbacks responding to `drag` movement phases.
-- `dragInfo` is an extended version of `touchInfo` from [$touch](../module:touch), 
+- `dragInfo` is an extended version of `touchInfo` from [uiTouch](../module:touch), 
   extending it with:
   - `originalTransform`: The [$transform](../module:transform) object relative to CSS transform before `$drag` is bound.
   - `originalRect`: The [Bounding Client Rect](https://developer.mozilla.org/en-US/docs/Web/API/Element.getBoundingClientRect) for bound element before any drag action.
@@ -47,7 +47,7 @@ Where:
   - `transform`: The current [$transform](../module:transform).
   - `reset`: A function restoring element to `originalTransform`.
   - `undo`: A function restoring element to `startTransform`.
-- `touchOptions` is an option object to be passed to underlying [`$touch`](../module:touch) service.
+- `touchOptions` is an option object to be passed to underlying [`uiTouch`](../module:touch) service.
 
 ### Predefined transforms
 
@@ -123,7 +123,7 @@ app.directive('dragMe', ['$drag', function($drag){
    ])
 
   .provider('$drag', function() {
-    this.$get = ['$touch', '$transform', function($touch, $transform) {
+    this.$get = ['uiTouch', '$transform', function(uiTouch, $transform) {
 
       // Add some css rules to be used while moving elements
       var style = document.createElement('style');
@@ -298,7 +298,7 @@ app.directive('dragMe', ['$drag', function($drag){
               // it is (ie. maybe html5 drag for images or scroll)
               event.preventDefault();
 
-              // $touch calls start on the first touch
+              // uiTouch calls start on the first touch
               // to ensure $drag.start is called only while actually
               // dragging and not for touches we will bind $drag.start
               // to the first time move is called
@@ -331,7 +331,7 @@ app.directive('dragMe', ['$drag', function($drag){
               cleanup();
 
               if (endEventHandler) {
-                endEventHandler(touch, event);
+                endEventHandler(touch, event, reset);
               }
             };
 
@@ -347,7 +347,7 @@ app.directive('dragMe', ['$drag', function($drag){
               }
             };
 
-            return $touch.bind($element, 
+            return uiTouch.bind($element, 
               {move: onTouchMove, end: onTouchEnd, cancel: onTouchCancel},
               touchOptions);
           } // ~ bind
@@ -370,7 +370,7 @@ app.directive('dragMe', ['$drag', function($drag){
   /**
    * An adaptation of `ngTouch.$swipe`, it is basically the same despite of:
    * 
-   * - It is based on [$touch](../module:touch)
+   * - It is based on [uiTouch](../module:touch)
    * - Swipes are recognized by touch velocity and direction
    * - It does not require `ngTouch` thus is better compatible with fastclick.js 
    * - Swipe directives are nestable
@@ -385,12 +385,12 @@ app.directive('dragMe', ['$drag', function($drag){
    *     $swipe.bind(..., pointerTypes: { mouse: { start: 'mousedown', ...} });
    *   ```
    *   This is due to the fact that the second parameter of `$swipe.bind` is destinated to options for
-   *   underlying `$touch` service.
+   *   underlying `uiTouch` service.
    *   
    * @service $swipe
    * @as class
    */
-  module.factory('$swipe', ['$touch', function($touch) {
+  module.factory('$swipe', ['uiTouch', function(uiTouch) {
     var VELOCITY_THRESHOLD = 500; // px/sec
     var MOVEMENT_THRESHOLD = 10; // px
     var TURNAROUND_MAX = 10; // px
@@ -441,7 +441,7 @@ app.directive('dragMe', ['$drag', function($drag){
        * @param  {function} [eventHandlers.end]  The callback for swipe end event.
        * @param  {function} [eventHandlers.move]  The callback for swipe move event.
        * @param  {function} [eventHandlers.cancel]  The callback for swipe cancel event.
-       * @param  {object} [options] Options to be passed to underlying [$touch.bind](../module:touch) function.
+       * @param  {object} [options] Options to be passed to underlying [uiTouch.bind](../module:touch) function.
        * 
        * @returns {function} The unbind function.
        * 
@@ -450,7 +450,7 @@ app.directive('dragMe', ['$drag', function($drag){
        */
       bind: function(element, eventHandlers, options) {
         options = angular.extend({}, defaultOptions, options || {});
-        return $touch.bind(element, eventHandlers, options);
+        return uiTouch.bind(element, eventHandlers, options);
       }
     };
   }]);
@@ -494,7 +494,7 @@ app.directive('dragMe', ['$drag', function($drag){
                   if (!event.__UiSwipeHandled__) {
                     event.__UiSwipeHandled__ = true;
                     scope.$apply(function() {
-                      onSwipe(scope, {$touch: swipe});
+                      onSwipe(scope, {uiTouch: swipe});
                     });
                   }
                 }
@@ -523,10 +523,10 @@ app.directive('dragMe', ['$drag', function($drag){
  * angular.module('myApp', ['mobile-angular-ui.gestures.touch']);
  * ```
  * 
- * Then you will be able to use the `$touch` service like that:
+ * Then you will be able to use the `uiTouch` service like that:
  * 
  * ``` js
- * var unbindFn = $touch.bind(element, {
+ * var unbindFn = uiTouch.bind(element, {
  *    start: function(touchInfo, e);
  *    move: function(touchInfo, e);
  *    end: function(touchInfo, e);
@@ -541,17 +541,17 @@ app.directive('dragMe', ['$drag', function($drag){
   var module = angular.module('mobile-angular-ui.gestures.touch', []);
 
   /** 
-   * `$touch` is an abstraction of touch event handling that works with 
+   * `uiTouch` is an abstraction of touch event handling that works with 
    * any kind of input devices.
    * 
    * It is intended for single touch only and provides 
    * extended infos about touch like: movement, direction, velocity, duration, and more.
-   * $touch service is intended as base to build any single-touch gesture handlers.
+   * uiTouch service is intended as base to build any single-touch gesture handlers.
    * 
    * **Usage**
    * 
    * ``` js
-   * var unbindFn = $touch.bind(element, {
+   * var unbindFn = uiTouch.bind(element, {
    *    start: function(touchInfo, e);
    *    move: function(touchInfo, e);
    *    end: function(touchInfo, e);
@@ -559,18 +559,18 @@ app.directive('dragMe', ['$drag', function($drag){
    * }, options);
    * ```
    * 
-   * @service $touch
+   * @service uiTouch
    * @as class
    */
   
 
   /**
-   * Configurable provider for `$touch` service
-   * @class  $touchProvider
+   * Configurable provider for `uiTouch` service
+   * @class  uiTouchProvider
    * @ngdoc  provider
-   * @memberOf mobile-angular-ui.gestures.touch~$touch
+   * @memberOf mobile-angular-ui.gestures.touch~uiTouch
    */
-  module.provider('$touch', function() {
+  module.provider('uiTouch', function() {
 
     /*=====================================
     =            Configuration            =
@@ -629,14 +629,14 @@ app.directive('dragMe', ['$drag', function($drag){
      * Ie.
      *
      * ```
-     * app.config(function($touchProvider){
-     *   $touchProvider.setPointerEvents({ pen: {start: "pendown", end: "penup", move: "penmove" }});
+     * app.config(function(uiTouchProvider){
+     *   uiTouchProvider.setPointerEvents({ pen: {start: "pendown", end: "penup", move: "penmove" }});
      * });
      * ```
      *
      * @name setPointerEvents
      * @param {object} pointerEvents The pointer events map object
-     * @memberOf mobile-angular-ui.gestures.touch~$touch.$touchProvider
+     * @memberOf mobile-angular-ui.gestures.touch~uiTouch.uiTouchProvider
      */
     this.setPointerEvents = function(pointerEvents) {
       POINTER_EVENTS = pointerEvents;
@@ -649,7 +649,7 @@ app.directive('dragMe', ['$drag', function($drag){
      * The default is defined as always true:
      *
      * ``` js
-     * $touchProvider.setValid(function(touch, event) {
+     * uiTouchProvider.setValid(function(touch, event) {
      *   return true;
      * });
      * ```
@@ -660,7 +660,7 @@ app.directive('dragMe', ['$drag', function($drag){
      *                   should be considered valid and its handlers triggered, 
      *                   or considered invalid and its handlers be ignored.                  
      * @method setValid
-     * @memberOf mobile-angular-ui.gestures.touch~$touch.$touchProvider
+     * @memberOf mobile-angular-ui.gestures.touch~uiTouch.uiTouchProvider
      */
     this.setValid = function(fn) {
       VALID = fn;
@@ -675,13 +675,13 @@ app.directive('dragMe', ['$drag', function($drag){
      * ie.
      * 
      * ``` js
-     * $touchProvider.setMovementThreshold(120);
+     * uiTouchProvider.setMovementThreshold(120);
      * ```
      * 
      * @param {integer}  threshold The new treeshold.
      * 
      * @method  setMovementThreshold
-     * @memberOf mobile-angular-ui.gestures.touch~$touch.$touchProvider
+     * @memberOf mobile-angular-ui.gestures.touch~uiTouch.uiTouchProvider
      */
     this.setMovementThreshold = function(v) {
       MOVEMENT_THRESHOLD = v;
@@ -701,7 +701,7 @@ app.directive('dragMe', ['$drag', function($drag){
      * ie.
      * 
      * ``` js
-     * $touchProvider.setSensitiveArea(function($element) {
+     * uiTouchProvider.setSensitiveArea(function($element) {
      *   return $element[0].ownerDocument.documentElement.getBoundingClientRect();
      * });
      * ```
@@ -712,7 +712,7 @@ app.directive('dragMe', ['$drag', function($drag){
      *                                                       element or a [rectangle](https://developer.mozilla.org/en-US/docs/Web/API/Element.getBoundingClientRect).
      *
      * @method  setSensitiveArea
-     * @memberOf mobile-angular-ui.gestures.touch~$touch.$touchProvider
+     * @memberOf mobile-angular-ui.gestures.touch~uiTouch.uiTouchProvider
      */
     this.setSensitiveArea = function(fnOrElementOrRect) {
       SENSITIVE_AREA = fnOrElementOrRect;
@@ -795,7 +795,7 @@ app.directive('dragMe', ['$drag', function($drag){
      * 
      * @class TouchInfo
      * @ngdoc type
-     * @memberOf mobile-angular-ui.gestures.touch~$touch
+     * @memberOf mobile-angular-ui.gestures.touch~uiTouch
      */
 
     var buildTouchInfo = function(type, c, t0, tl) {
@@ -892,7 +892,7 @@ app.directive('dragMe', ['$drag', function($drag){
          * Bind touch handlers for an element.
          *
          * ``` js
-         * var unbind = $touch.bind(elem, { 
+         * var unbind = uiTouch.bind(elem, { 
          *   end: function(touch) { 
          *     console.log('Avg Speed:', touch.averageVelocity);
          *     unbind();
@@ -913,11 +913,11 @@ app.directive('dragMe', ['$drag', function($drag){
          *                                                                  or a function that takes the bound element and returns one of the previous.
          *                                                                  Sensitive area define bounduaries to release touch when movement is outside.
          * @param  {array} [options.pointerTypes] Pointer types to handle. An array of pointer types that is intended to be 
-         *                                        a subset of keys from default pointer events map (see `$touchProvider.setPointerEvents`).
+         *                                        a subset of keys from default pointer events map (see `uiTouchProvider.setPointerEvents`).
          *
          * @returns {function} The unbind function.
          * 
-         * @memberOf mobile-angular-ui.gestures.touch~$touch
+         * @memberOf mobile-angular-ui.gestures.touch~uiTouch
          */
         bind: function($element, eventHandlers, options) {
 
