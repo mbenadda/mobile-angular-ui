@@ -30,7 +30,6 @@ angular.module('myApp', ['mobile-angular-ui.core']);
 (function () {
   'use strict';
   angular.module('mobile-angular-ui.core', [
-    'mobile-angular-ui.core.fastclick',
     'mobile-angular-ui.core.activeLinks',
     'mobile-angular-ui.core.capture',
     'mobile-angular-ui.core.outerClick',
